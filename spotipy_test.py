@@ -47,9 +47,11 @@ for artist in artistSet[genre]:
 		songs = myGetTracks(album)
 		for song in songs:
 			print song
+			print song.artist, song.name
+			print type(song)
 			try:
 				lyrics = PyLyrics.getLyrics(song.artist,song.name)
 			except ValueError:
 				print "Song not in wikia lyrics!"
 				continue
-			print lyrics
+			#print lyrics
