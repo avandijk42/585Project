@@ -73,7 +73,7 @@ class lyricsFetch():
 		"""Return the lyrics for a new existing song"""
 		lyrics = None
 		while lyrics is None:
-			song = self.songIter.next()
+			song = self.songIter.next() #throws StopIteration Exception. Needs to be caught anywhere this is used.
 			try:
 				lyrics = PyLyrics.getLyrics(song.artist,song.name)
 			except ValueError:
