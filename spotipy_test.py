@@ -1,14 +1,9 @@
-
-import os
 import spotipy_api
 from PyLyrics import *
 import spotipy
 import numpy as np
-from textblob import TextBlob
-from textstat.textstat import textstat as ts
 import random
 import time
-
 from spotipy.oauth2 import SpotifyClientCredentials
 
 genreSet = {('pop',0),('country',1),('rock',2),('rap',3)}
