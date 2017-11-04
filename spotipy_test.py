@@ -1,7 +1,6 @@
 
 import os
-os.environ["SPOTIPY_CLIENT_ID"] = "fe19e6ca3ccb4f5b8018282df6a4d9b9"
-os.environ["SPOTIPY_CLIENT_SECRET"] = "eb55cb5bd4c14b16b1a2d2423c80bb7d"
+import spotipy_api
 from PyLyrics import *
 import spotipy
 import numpy as np
