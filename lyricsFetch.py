@@ -5,9 +5,6 @@ This handles fetching lyrics for the data generator
 import spotipy_api
 from PyLyrics import *
 import spotipy
-import numpy as np
-import random
-import time
 from spotipy.oauth2 import SpotifyClientCredentials
 from collections import defaultdict
 
@@ -79,14 +76,13 @@ class lyricsFetch():
 			except ValueError:
 				if self.verbose:
 					print "Song not in wikia lyrics!"
-				continue
 		artist = song.artist
 		title = song.name
 		return (title, artist, lyrics)
 
 test = False
 if test:
-	lf = lyricsFetch('rock',2,5)
+	lf = lyricsFetch('rock',10,5)
 	#print lf.songSet
-	for n in range(5):
+	for n in range(9):
 		print lf.getNextLyricSet()
