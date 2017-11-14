@@ -3,8 +3,8 @@ import sys
 
 test = len(sys.argv) > 1 and sys.argv[1] == 'test'
 
-ARTIST_COUNT = 5 if test else 10000
-SONG_PER_ARTIST = 5 if test else 10000
+ARTIST_COUNT = 5 if test else 50
+SONG_PER_ARTIST = 5 if test else 1000
 
 for category in ['rock', 'rap', 'country', 'pop']:
 	lf = lyricsFetch(category, ARTIST_COUNT, SONG_PER_ARTIST, verbose=False)

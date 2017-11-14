@@ -7,7 +7,6 @@ from PyLyrics import *
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from collections import defaultdict
-import bad_responses
 import re
 
 class lyricsFetch():
