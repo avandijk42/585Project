@@ -11,7 +11,7 @@ chars = list(set(mylist))
 
 
 VOCAB_SIZE = len(chars)
-SEQ_LENGTH = 20
+SEQ_LENGTH = 6
 
 
 ix_to_char = {ix:char for ix, char in enumerate(chars)}
