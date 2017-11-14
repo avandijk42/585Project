@@ -18,8 +18,8 @@ ix_to_char = {ix:char for ix, char in enumerate(chars)}
 char_to_ix = {char:ix for ix, char in enumerate(chars)}
 
 
-X = np.zeros((len(mylist)/SEQ_LENGTH, SEQ_LENGTH, len(chars)))
-y = np.zeros((len(mylist)/SEQ_LENGTH, SEQ_LENGTH, len(chars)))
+X = np.zeros((int(len(mylist)/SEQ_LENGTH), SEQ_LENGTH, len(chars)))
+y = np.zeros((int(len(mylist)/SEQ_LENGTH), SEQ_LENGTH, len(chars)))
 for i in range(0, int(len(mylist)/SEQ_LENGTH)):
     X_sequence = mylist[i*SEQ_LENGTH:(i+1)*SEQ_LENGTH]
     X_sequence_ix = [char_to_ix[value] for value in X_sequence]
