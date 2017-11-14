@@ -80,7 +80,7 @@ class lyricsFetch():
 		title = song.name
 		return (title, artist, lyrics)
 
-test = True
+test = False
 if test:
 	lf = lyricsFetch('rock',10,5)
 	#print lf.songSet
