@@ -8,7 +8,7 @@ SONG_PER_ARTIST = 5 if test else 30
 
 for category in ['rock', 'rap', 'country', 'pop']:
 	lf = lyricsFetch(category, ARTIST_COUNT, SONG_PER_ARTIST, verbose=False)
-	lyric_file = open('data/'+category+'.txt', "w")
+	lyric_file = open('data/'+category+'.txt', "w+")
 	while True:
 		lset = lf.getNextLyricSet()
 		if lset==None:
