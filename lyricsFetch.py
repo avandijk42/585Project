@@ -45,6 +45,8 @@ class lyricsFetch():
 					print album
 					print "------------"
 				songs = self.myGetTracks(album)
+				if songs == None:
+					continue
 				for song in songs:
 					if self.verbose:
 						print song
@@ -63,6 +65,8 @@ class lyricsFetch():
 			currentAlbum = al
 			if al.text.lower().strip() == album.name.strip().lower():
 				break
+		if currentAlbum == None: # this must be caught above
+			return None
 		songs = [Track(song.text,album,album.artist()) for song in currentAlbum.findNext('songs').findAll('item')]
 		return songs
 		
