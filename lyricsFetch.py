@@ -76,7 +76,7 @@ class lyricsFetch():
 		lyrics = None
 		while lyrics is None:
 			try:
-				song = self.songIter.next() #throws StopIteration Exception. Needs to be caught anywhere this is used.
+				song = self.songIter.next() 
 			except StopIteration:
 				return None
 			try:
@@ -96,8 +96,7 @@ if test:
 	lf = lyricsFetch('country',2,2, verbose=False)
 	#print lf.songSet
 	toPrint = ""
-	c = 1
-	while c < 5:
+	while True:
 		lset = lf.getNextLyricSet()
 		if lset == None:
 			break
