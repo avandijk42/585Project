@@ -65,7 +65,7 @@ class lyricsFetch():
 			currentAlbum = al
 			if al.text.lower().strip() == album.name.strip().lower():
 				break
-		if currentAlbum == None: # this must be caught above
+		if al == None: # this must be caught above
 			return None
 		songs = [Track(song.text,album,album.artist()) for song in currentAlbum.findNext('songs').findAll('item')]
 		return songs
