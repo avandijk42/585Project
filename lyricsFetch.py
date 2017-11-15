@@ -61,6 +61,7 @@ class lyricsFetch():
 	def myGetTracks(self,album):
 		url = "http://lyrics.wikia.com/api.php?action=lyrics&artist={0}&fmt=xml".format(album.artist())
 		soup = BeautifulSoup(requests.get(url).text,"xml")
+		al = None
 		for al in soup.find_all('album'):
 			currentAlbum = al
 			if al.text.lower().strip() == album.name.strip().lower():
