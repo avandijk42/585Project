@@ -4,7 +4,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Activation, Flatten, Convolution2D, Permute, LSTM, TimeDistributed
 
 #data = open('lyrics.txt')
-with open('lyrics.txt') as f:
+with open('rapLyrics.txt') as f:
     mylist = [line.rstrip('\n') for line in f]
 print (len(mylist))
 chars = list(set(mylist))
@@ -17,7 +17,18 @@ SEQ_LENGTH = 6
 ix_to_char = {ix:char for ix, char in enumerate(chars)}
 char_to_ix = {char:ix for ix, char in enumerate(chars)}
 
+"""
+3 dimensions for the figure.
 
+The number of features is the 3rd dimension. This is the list of the chars set because we are using the characters
+as features
+
+The length of the sequence is how many characters we want the model to look at a time. We chose 6 so that it looks
+at every word
+
+The number of sequences is the amount of data / the sequences we want looked at for each time
+
+"""
 X = np.zeros((int(len(mylist)/SEQ_LENGTH), SEQ_LENGTH, len(chars)))
 y = np.zeros((int(len(mylist)/SEQ_LENGTH), SEQ_LENGTH, len(chars)))
 for i in range(0, int(len(mylist)/SEQ_LENGTH)):
@@ -37,8 +48,8 @@ for i in range(0, int(len(mylist)/SEQ_LENGTH)):
 
 
 model = Sequential()
-HIDDEN_DIM = 50
-LAYER_NUM = 50
+HIDDEN_DIM = 3
+LAYER_NUM = 3
 model.add(LSTM(HIDDEN_DIM, input_shape=(None, VOCAB_SIZE), return_sequences=True))
 for i in range(LAYER_NUM - 1):
     model.add(LSTM(HIDDEN_DIM, return_sequences=True))
@@ -57,13 +68,13 @@ def generate_text(model, length):
         y_char.append(ix_to_char[ix[-1]])
     return ('').join(y_char)
 
-nb_epoch = 300
-BATCH_SIZE = 50
-GENERATE_LENGTH = 50
+nb_epoch = 20
+BATCH_SIZE = 5
+GENERATE_LENGTH = 10
 fileBad = open("badLyrics.txt", "w")
 while True:
     print('\n\n')
-    model.fit(X, y, batch_size=BATCH_SIZE, verbose=1, nb_epoch=300)
+    model.fit(X, y, batch_size=BATCH_SIZE, verbose=1, nb_epoch=20)
     nb_epoch += 1
     #print(generate_text(model, GENERATE_LENGTH))
     #print('!!!!!!!!!')
