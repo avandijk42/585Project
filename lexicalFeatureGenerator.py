@@ -59,4 +59,6 @@ def get_ngram_featvec(text, n):
 	encoder = {v:i for i,v in enumerate(unique)}
 	decoder = {i:v for i,v in enumerate(unique)}
 	featvec = [encoder[ngram] for ngram in ngrams]
+	print ngrams[0]
+	print featvec[0]
 	return (featvec, encoder, decoder)

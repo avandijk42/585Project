@@ -2,7 +2,7 @@ import numpy as np
 
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Flatten, Convolution2D, Permute, LSTM, TimeDistributed
-
+"""
 #data = open('lyrics.txt')
 with open('rapLyrics.txt') as f:
     mylist = [line.rstrip('\n') for line in f]
@@ -13,10 +13,17 @@ chars = list(set(mylist))
 VOCAB_SIZE = len(chars)
 SEQ_LENGTH = 6
 
-
 ix_to_char = {ix:char for ix, char in enumerate(chars)}
 char_to_ix = {char:ix for ix, char in enumerate(chars)}
+"""
+input_ = open("rock_abridged.txt", "r")
+(featvec, encoder, decoder) = lfg.get_ngram_featvec(input_,3)
+chars = set(featvec)
+VOCAB_SIZE = len(chars)
+SEQ_LENGTH = 6
 
+ix_to_char = encoder
+char_to_ix = decoder
 """
 3 dimensions for the figure.
 
