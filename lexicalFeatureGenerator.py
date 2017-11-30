@@ -1,4 +1,4 @@
-from lyricsFetch import lyricsFetch
+# from lyricsFetch import lyricsFetch
 import re
 
 def get_lyric_ngrams(artistCount,songCount,category='rock',ngram=3):
@@ -31,3 +31,32 @@ def get_ngrams(lines, n):
 			for i in range(num_ngram):
 				ngrams.append(line_formatted[i:i+n])
 	return ngrams
+
+def get_ngram_strings(lines, n):
+	ngrams = []
+	for line in lines:
+		line_formatted = '<S_L> ' + line + ' <E_L>'
+		if len(line_formatted.split()) <= n:
+			ngrams.append(line_formatted)
+		else:
+			# expression for the number of ngrams in a sequence
+			num_ngram = len(line_formatted.split()) - n + 1
+			tokens = line_formatted.split()
+			for i in range(num_ngram):
+				ngram = tokens[i]
+				for token in tokens[i+1:i+n]:
+					ngram = ngram + ' ' + token
+				ngrams.append(ngram)
+				
+	return ngrams
+
+# takes in formatted lyric text in the form of "[line]\n[line]\n...[line]\n\n<SONG_BOUNDARY>\n\n..."
+def get_ngram_featvec(text, n):
+	lines = [line for song in text.split("\n\n<SONG_BOUNDARY>\n\n") for lines in song.split('\n\n') for line in lines.split('\n')]
+	ngrams = get_ngram_strings(lines, n)
+	unique = list(set(ngrams))
+	print str(n)+'-gram feature vector has '+str(len(unique))+' dimensions'
+	encoder = {v:i for i,v in enumerate(unique)}
+	decoder = {i:v for i,v in enumerate(unique)}
+	featvec = [encoder[ngram] for ngram in ngrams]
+	return (featvec, encoder, decoder)
