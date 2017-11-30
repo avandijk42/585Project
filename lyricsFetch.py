@@ -92,11 +92,5 @@ testFile = open("test.txt", "w")
 if test:
 	lf = lyricsFetch('country',2,2, verbose=False)
 	#print lf.songSet
-	toPrint = ""
-	c = 1
-	while c < 5:
-		lset = lf.getNextLyricSet()
-		if lset == None:
-			break
-		testFile.write(lset[2]+'\n\n<SONG_BOUNDARY>\n\n')
-testFile.close()
+	for n in range(9):
+		print lf.getNextLyricSet()
