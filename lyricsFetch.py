@@ -7,6 +7,8 @@ from PyLyrics import *
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from collections import defaultdict
+import bad_responses
+import re
 
 class lyricsFetch():
 	def __init__(self,genre,artistCount,tracksPerArtist,verbose=True):
@@ -70,9 +72,14 @@ class lyricsFetch():
 		"""Return the lyrics for a new existing song"""
 		lyrics = None
 		while lyrics is None:
-			song = self.songIter.next() #throws StopIteration Exception. Needs to be caught anywhere this is used.
+			try:
+				song = self.songIter.next() #throws StopIteration Exception. Needs to be caught anywhere this is used.
+			except StopIteration:
+				return None
 			try:
 				lyrics = PyLyrics.getLyrics(song.artist,song.name)
+				if lyrics[:5] == '<span':
+					lyrics = None
 			except ValueError:
 				if self.verbose:
 					print "Song not in wikia lyrics!"
@@ -80,9 +87,16 @@ class lyricsFetch():
 		title = song.name
 		return (title, artist, lyrics)
 
-test = False
+test = True
+testFile = open("test.txt", "w")
 if test:
-	lf = lyricsFetch('rock',10,5)
+	lf = lyricsFetch('country',2,2, verbose=False)
 	#print lf.songSet
-	for n in range(9):
-		print lf.getNextLyricSet()
+	toPrint = ""
+	c = 1
+	while c < 5:
+		lset = lf.getNextLyricSet()
+		if lset == None:
+			break
+		testFile.write(lset[2]+'\n\n<SONG_BOUNDARY>\n\n')
+testFile.close()
