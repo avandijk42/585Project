@@ -1,5 +1,12 @@
 # from lyricsFetch import lyricsFetch
 import re
+from nltk.corpus import cmudict
+import time
+
+cmud = cmudict.dict()
+cmuw = cmudict.words()
+vowels = ['AA', 'AH', 'AW', 'EH', 'EY', 'IH', 'OW', 'UH', 'AE', 'AO', 'AY', 'ER', 'IY', 'OY', 'UW']
+fixed = {}
 
 def get_lyric_ngrams(artistCount,songCount,category='rock',ngram=3):
 	lf = lyricsFetch('rock', artistCount, songCount)
@@ -59,4 +66,119 @@ def get_ngram_featvec(text, n):
 	encoder = {v:i for i,v in enumerate(unique)}
 	decoder = {i:v for i,v in enumerate(unique)}
 	featvec = [encoder[ngram] for ngram in ngrams]
-	return (featvec, encoder, decoder)
+	# return (featvec, encoder, decoder)
+
+def getRhymePhonemes(word):
+	nonum = lambda x: re.sub('\d', '', x)
+	w = re.sub('[!?().,":;]', '', word)
+	w = w.lower()
+	if w in cmuw:
+		prons = cmud[w]
+		rhymes = []
+		for pron in prons:
+			if nonum(pron[-1]) in vowels:
+				rhymes.append([nonum(pron[-1])])
+			else:
+				rhymes.append([nonum(phoneme) for phoneme in pron[-2:]])
+		return rhymes
+	if re.match('.*in\'$', word):
+		w = re.sub('in\'', 'ing', w)
+		if w in cmuw:
+			prons = cmud[w]
+			rhyme = []
+			for pron in prons:
+				if pron[-1] == "NG":
+					rhyme.append([nonum(pron[-2]), 'N'])
+			return rhyme
+	if word.lower() in fixed.keys():
+		return [[fixed[word.lower()]]]
+	return [['X']]
+
+def stanzaRhymePattern(L):
+	C = ['']*len(L)
+	for i,p in enumerate(L):
+		if p == ['X']:
+			C[i] = 'X'
+
+	cur = 0
+	for i,p1 in enumerate(L):
+		if C[i] == '':
+			C[i] = cur
+			for j in range(i+1, len(L)):
+				p2 = L[j]
+				if len(set(p1) & set(p2)) > 0:
+					C[j] = cur
+			cur += 1
+	ret = ''
+	for x in C:
+		ret = ret + str(x) + ' '
+	return ret[:-1]
+
+def phonListToStr(phonList):
+	string = ""
+	for i,p in enumerate(phonList):
+		if i == len(phonList)-1:
+			string = string + p
+		else:
+			string += string + p + ' '
+	return string
+
+def rhyme_pattern(song):
+	stanzas = song.split('\n\n')
+	pattern = ''
+	for st in stanzas:
+		lastWords = [l.split(' ')[-1] for l in st.split('\n')]
+		L = [list(set([phonListToStr(s) for s in getRhymePhonemes(w)])) for w in lastWords]
+		pattern = pattern + stanzaRhymePattern(L) + ','
+	return '<RH=' + pattern[:-1] + '>'
+
+def populateOutwords():
+	f = open("rock.txt", 'r')
+	out = open("outwords.txt", 'w')
+	i = 0
+	for song in open("rock.txt", 'r').read().split('\n\n<SONG_BOUNDARY>\n\n'):
+		song = re.sub(' +\n', '\n', song)
+		for stanza in song.split('\n\n'):
+			for line in stanza.split('\n'):
+				last = line.split(' ')[-1]
+				last = re.sub('[!?().,":;]', '', last)
+				if re.match('.*in\'$', last):
+					last = re.sub('in\'', 'ing', last)
+				if last.lower() not in cmuw:
+					out.write(last.lower() + '\n')
+				if i % 100 == 0:
+					print i
+				i += 1
+	f.close()
+	out.close()
+
+def processFixed():
+	f = open("fixed.txt", 'r')
+	for word in f.read().split('\n'):
+		x = word.split('|')
+		if len(x[1]) > 0:
+			fixed[x[0]] = x[1]
+		else:
+			continue
+
+# processFixed()
+
+f = open("rock.txt", 'r')
+# lines = [song for song in f.read().split('\n')]
+songs = [song for song in f.read().split('\n\n<SONG_BOUNDARY>\n\n')]
+
+processFixed()
+
+patterns = open("patterns.txt", 'w')
+
+start = time.time()
+for i,s in enumerate(songs):
+	s = re.sub(' \n', '\n', s)
+	rhyme = rhyme_pattern(s)
+	rhyme = re.sub('<RH=', '', rhyme)
+	rhyme = re.sub('>', '', rhyme)
+	rstanza = rhyme.split(',')
+	for rhymePattern in rstanza:
+		patterns.write(rhymePattern)
+
+# print "TOOK: " + str(time.time() - start) + ' seconds'
