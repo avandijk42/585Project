@@ -1,9 +1,9 @@
 # from lyricsFetch import lyricsFetch
+from __future__ import division
 import re
 from nltk.corpus import cmudict
 import time
 import numpy as np
-import os
 
 cmud = cmudict.dict()
 cmuw = cmudict.words()
@@ -192,7 +192,7 @@ def generatePatterns(genre):
 
 	# start = time.time()
 	for i,s in enumerate(songs):
-		if i%50==0: print i/len(songs),'%'
+		if i%50==0: print int(i/len(songs) * 100),'%'
 		s = re.sub(' \n', '\n', s)
 		rhyme = rhyme_pattern(s)
 		rhyme = re.sub('<RH=', '', rhyme)
@@ -201,10 +201,22 @@ def generatePatterns(genre):
 		for rhymePattern in rstanza:
 			if 'X' in rhymePattern: continue
 			if max([int(r) for r in rhymePattern.split(' ')]) < 6:
-				patterns.write(rhymePattern + '\n')
+				patterns.write(rhymePattern + ' \n')
 
+def getRhymeFeatVec():
+	f = open('patterns.txt', 'r')
+	encoder = {'0':0, '1':1, '2':2, '3':3, '4':4, '5':5, '\n':6}
+	decoder = {v:k for k,v in encoder.items()}
+	featvec = []
+	for c in f.read().split(' '):
+		if c == '\n0':
+			featvec.extend([6,0])
+		else:
+			featvec.append(encoder[c])
+	return featvec, encoder, decoder
 
-generatePatterns('rock')
+f,e,d = getRhymeFeatVec()
+print f[-20:]
 # N = 4
 
 # ngrams = [tuple(x) for x in get_ngrams_normalized(f.read(),N)]
