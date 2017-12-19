@@ -1,21 +1,23 @@
 import numpy as np
+from lexicalFeatureGenerator import getRhymeFeatVec
 
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Flatten, Convolution2D, Permute, LSTM, TimeDistributed
 from keras.utils.np_utils import to_categorical
 #data = open('lyrics.txt')
-with open('patterns.txt') as f:
-    mylist = [line.rstrip('\n') for line in f]
-print (len(mylist))
-chars = list(set(mylist))
-
+# with open('patterns.txt') as f:
+#     mylist = [line.rstrip('\n') for line in f]
+# print (len(mylist))
+# chars = list(set(mylist))
+mylist, char_to_ix, ix_to_char = getRhymeFeatVec()
+chars = list(char_to_ix.keys())
 
 VOCAB_SIZE = len(chars)
 SEQ_LENGTH = 6
 
 
-ix_to_char = {ix:char for ix, char in enumerate(chars)}
-char_to_ix = {char:ix for ix, char in enumerate(chars)}
+# ix_to_char = {ix:char for ix, char in enumerate(chars)}
+# char_to_ix = {char:ix for ix, char in enumerate(chars)}
 
 """
 3 dimensions for the figure.
