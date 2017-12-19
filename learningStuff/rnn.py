@@ -2,9 +2,9 @@ import numpy as np
 
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Flatten, Convolution2D, Permute, LSTM, TimeDistributed
-
+from keras.utils.np_utils import to_categorical
 #data = open('lyrics.txt')
-with open('rapLyrics.txt') as f:
+with open('patterns.txt') as f:
     mylist = [line.rstrip('\n') for line in f]
 print (len(mylist))
 chars = list(set(mylist))
@@ -72,6 +72,10 @@ nb_epoch = 20
 BATCH_SIZE = 5
 GENERATE_LENGTH = 10
 fileBad = open("badLyrics.txt", "w")
+
+#y_binary = to_categorical(y)
+
+
 while True:
     print('\n\n')
     model.fit(X, y, batch_size=BATCH_SIZE, verbose=1, nb_epoch=20)
