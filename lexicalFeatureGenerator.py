@@ -215,8 +215,6 @@ def getRhymeFeatVec():
 			featvec.append(encoder[c])
 	return featvec, encoder, decoder
 
-f,e,d = getRhymeFeatVec()
-print f[-20:]
 # N = 4
 
 # ngrams = [tuple(x) for x in get_ngrams_normalized(f.read(),N)]
