@@ -43,10 +43,12 @@ def backGenLine(allNgrams, seed, lineLength = 10): # returns generated line
 	flatCandidates = [(strFlatten(x),w[x]) for x in lastCandidates.keys()]
 
 	# make a probability distribution proportional to the counts of each ngram
+	if len(flatCandidates) == 0:
+		return "Couldn't find ngrams for this: %s" % (seed)
 	probs = np.array([y for x,y in flatCandidates]) / sum(lastCandidates.values())
-	# amplify probability distribution
-	probs = (probs + ((max(probs) - min(probs)) / 2)) ** 2
-	probs = probs / sum(probs)
+	# # amplify probability distribution
+	# probs = (probs + ((max(probs) - min(probs)) / 2)) ** 2
+	# probs = probs / sum(probs)
 	# randomly select ngram with probability proportional to their counts
 	last = np.random.choice([x for x,y in flatCandidates], p=probs, size=1)
 

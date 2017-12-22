@@ -4,6 +4,7 @@ import re
 from nltk.corpus import cmudict
 import time
 import numpy as np
+import os
 
 cmud = cmudict.dict()
 cmuw = cmudict.words()
@@ -43,7 +44,7 @@ def get_ngrams(lines, n):
 	return ngrams
 
 def get_ngrams_normalized(text, n):
-	text = re.sub('[\[\]!?().,":;]', '', text) # strip bad characters
+	text = re.sub('[!?().,":;]', '', text) # strip bad characters
 	songs = text.split('\n\n<SONG_BOUNDARY>\n\n')
 	lines = [line for song in songs for stanza in song.split('\n\n') for line in stanza.split('\n')]
 	ngrams = []
@@ -100,6 +101,7 @@ def getRhymePhonemes(word):
 				rhymes.append([nonum(pron[-1])])
 			else:
 				rhymes.append([nonum(phoneme) for phoneme in pron[-2:]])
+		addToRhyme2Word(rhymes[0], w)
 		return rhymes
 	if re.match('.*in\'$', word):
 		w = re.sub('in\'', 'ing', w)
@@ -109,10 +111,19 @@ def getRhymePhonemes(word):
 			for pron in prons:
 				if pron[-1] == "NG":
 					rhyme.append([nonum(pron[-2]), 'N'])
+			addToRhyme2Word(rhyme[0], word.lower())
 			return rhyme
 	if word.lower() in fixed.keys():
+		addToRhyme2Word(fixed[word.lower()].split(), word.lower())
 		return [[fixed[word.lower()]]]
 	return [['X']]
+
+def addToRhyme2Word(phonList, word):
+	stringRep = phonListToStr(phonList)
+	if stringRep not in rhyme2words.keys():
+		rhyme2words[stringRep] = [word]
+	elif word not in rhyme2words[stringRep]:
+		rhyme2words[stringRep].append(word)
 
 def stanzaRhymePattern(L):
 	C = ['']*len(L)
@@ -215,17 +226,56 @@ def getRhymeFeatVec():
 			featvec.append(encoder[c])
 	return featvec, encoder, decoder
 
-# N = 4
+def getLastsForPattern(pattern):
+	dic1 = {x:0 for x in set(pattern)}
+	dic2 = {x:[] for x in set(pattern)}
+	for sym in pattern:
+		dic1[sym] += 1
 
-# ngrams = [tuple(x) for x in get_ngrams_normalized(f.read(),N)]
-# lasts = [ngram for ngram in ngrams if list(ngram)[-1] == '<endline>']
-# from gauss import backGenLine
+	for k,v in dic1.items():
+		lists = [xs for xs in rhyme2words.values() if len(xs) >= v]
+		chosenSet = np.random.choice(lists, size=1, replace=False)[0]
+		np.random.shuffle(chosenSet)
+		dic2[k] = list(chosenSet)
+	return [ dic2[x].pop() for x in pattern ]
 
-# for _ in range(20):
-# 	arr = backGenLine(ngrams, np.random.choice(lasts,size=1)[0][N-2], 10)
-# 	string = ""
-# 	for a in arr:
-# 		string = string + a + ' '
-# 	print string[:-1]
+def processRhyme2words():
+	f = open('rhyme2words.txt', 'r')
+	for line in f.read().split('\n')[:-1]:
+		phon,words = tuple(line.split('|'))
+		wordlist = words.split(',')
+		rhyme2words[phon] = wordlist
 
-# print "TOOK: " + str(time.time() - start) + ' seconds'
+def testLasts():
+	processFixed()
+	processRhyme2words()
+	print getLastsForPattern([0,0,0,1,1,1,2,2,0,0,0])
+	os.system('play --no-show-progress --null --channels 1 synth %s sine %f' % (0.25, 440))
+
+def generateLyrics(N=3):
+	f = open('rock.txt', 'r')
+	processFixed()
+	processRhyme2words()
+	ngrams = [tuple(x) for x in get_ngrams_normalized(f.read(),N)]
+	lasts = [ngram for ngram in ngrams if list(ngram)[-1] == '<endline>']
+	from gauss import backGenLine
+
+	lines = []
+	for seed in getLastsForPattern([i for i in range(50)]):
+		arr = backGenLine(ngrams, seed, 10)
+		string = ""
+		for a in arr:
+			string = string + a + ' '
+		lines.append(string[:-1])
+		print string[:-1]
+	return lines
+
+def lineOverlap():
+	newlines = generateLyrics()
+	f = open('rock.txt', 'r')
+	songs = f.read().split('\n\n<SONG_BOUNDARY>\n\n')
+	lines = [l for so in songs for st in so.split('\n\n') for l in st.split('\n')]
+	lines = [re.sub('[!?().,":;]', '', l).lower() for l in lines]
+	return len([l for l in newlines if l in lines]) / len(newlines)
+
+print lineOverlap()
