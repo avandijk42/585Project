@@ -70,17 +70,17 @@ def generate_text(model, length):
         y_char.append(ix_to_char[ix[-1]])
     return ('').join(y_char)
 
-nb_epoch = 20
-BATCH_SIZE = 5
+nb_epoch = 10
+BATCH_SIZE = 100
 GENERATE_LENGTH = 10
-fileBad = open("badLyrics.txt", "w")
+fileBad = open("badLyrics100.txt", "w")
 
 #y_binary = to_categorical(y)
 
 
 while True:
     print('\n\n')
-    model.fit(X, y, batch_size=BATCH_SIZE, verbose=1, nb_epoch=20)
+    model.fit(X, y, batch_size=BATCH_SIZE, verbose=1, nb_epoch=10)
     nb_epoch += 1
     #print(generate_text(model, GENERATE_LENGTH))
     #print('!!!!!!!!!')
