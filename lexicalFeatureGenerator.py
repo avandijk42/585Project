@@ -250,9 +250,11 @@ def testLasts():
 	processFixed()
 	processRhyme2words()
 	print getLastsForPattern([0,0,0,1,1,1,2,2,0,0,0])
+
+def boop():
 	os.system('play --no-show-progress --null --channels 1 synth %s sine %f' % (0.25, 440))
 
-def generateLyrics(N=3):
+def generateLyrics(N=3, pattern=[0,0,1,1]):
 	f = open('rock.txt', 'r')
 	processFixed()
 	processRhyme2words()
@@ -261,21 +263,44 @@ def generateLyrics(N=3):
 	from gauss import backGenLine
 
 	lines = []
-	for seed in getLastsForPattern([i for i in range(50)]):
+	for i,seed in enumerate(getLastsForPattern(pattern)):
+		if i%40==0:print 100*i/200, '%'
 		arr = backGenLine(ngrams, seed, 10)
+		if arr == None:
+			continue
 		string = ""
 		for a in arr:
 			string = string + a + ' '
 		lines.append(string[:-1])
-		print string[:-1]
 	return lines
 
-def lineOverlap():
-	newlines = generateLyrics()
+def lineOverlap(N):
+	newlines = generateLyrics(N, [i for i in range(200)])
 	f = open('rock.txt', 'r')
 	songs = f.read().split('\n\n<SONG_BOUNDARY>\n\n')
 	lines = [l for so in songs for st in so.split('\n\n') for l in st.split('\n')]
 	lines = [re.sub('[!?().,":;]', '', l).lower() for l in lines]
+	# for gen in newlines:
+	# 	matches = [l for l in lines if l.split()[-1] == gen.split()[-1]]
 	return len([l for l in newlines if l in lines]) / len(newlines)
 
-print lineOverlap()
+def getAverageOverlap():
+	count = 0
+	for _ in range(5):
+		count += lineOverlap(4)
+
+	print count / 5
+	boop()
+
+def textSample():
+	print '\n\nN=2,[0,0,1,1]\n'
+	for line in generateLyrics(N=2, pattern=[0,0,1,1]):
+		print line
+	print '\n\nN=3,[0,0,1,1]\n'
+	for line in generateLyrics(N=3, pattern=[0,0,1,1]):
+		print line
+	print '\n\nN=4,[0,0,1,1]\n'
+	for line in generateLyrics(N=4, pattern=[0,0,1,1]):
+		print line
+
+textSample()

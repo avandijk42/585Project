@@ -44,7 +44,7 @@ def backGenLine(allNgrams, seed, lineLength = 10): # returns generated line
 
 	# make a probability distribution proportional to the counts of each ngram
 	if len(flatCandidates) == 0:
-		return "Couldn't find ngrams for this: %s" % (seed)
+		return None
 	probs = np.array([y for x,y in flatCandidates]) / sum(lastCandidates.values())
 	# # amplify probability distribution
 	# probs = (probs + ((max(probs) - min(probs)) / 2)) ** 2
