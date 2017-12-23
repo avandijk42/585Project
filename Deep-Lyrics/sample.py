@@ -13,9 +13,9 @@ def main():
     parser.add_argument('--vocabulary_file', type=str, required=True)
     parser.add_argument('--output_file', type=str, required=True)
 
-    parser.add_argument('--seed', type=str, default="Once upon a time, ")
-    parser.add_argument('--sample_length', type=int, default=1500)
-    parser.add_argument('--log_frequency', type=int, default=100)
+    parser.add_argument('--seed', type=str, default="0")
+    parser.add_argument('--sample_length', type=int, default=200)
+    parser.add_argument('--log_frequency', type=int, default=50)
     args = parser.parse_args()
 
     model_name = args.model_name
