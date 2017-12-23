@@ -1,0 +1,4 @@
+#! /bin/sh
+cd ~/585Project/learningStuff
+module load python/3.6.1
+python3.6 rnn.py

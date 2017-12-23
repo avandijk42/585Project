@@ -1,0 +1,2 @@
+model_checkpoint_path: "lstm_regression_model.ckpt-3920000"
+all_model_checkpoint_paths: "lstm_regression_model.ckpt-3920000"
